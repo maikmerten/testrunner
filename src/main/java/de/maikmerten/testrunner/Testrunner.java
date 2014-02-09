@@ -23,6 +23,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -225,7 +226,8 @@ public class Testrunner {
                     true,
                     false
             );
-            // set some chart display options and render to PNG
+            // set some chart render options and save to PNG
+            chart.getXYPlot().setRenderer(new XYSplineRenderer());
             chart.getXYPlot().getRangeAxis().setRange(minssim - 0.5, maxssim + 0.5);
             NumberAxis xAxis = (NumberAxis) chart.getXYPlot().getDomainAxis();
             xAxis.setTickUnit(new NumberTickUnit(tickunit));
