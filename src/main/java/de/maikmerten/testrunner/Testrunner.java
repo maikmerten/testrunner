@@ -16,6 +16,15 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartUtilities;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 /**
  *
@@ -173,8 +182,57 @@ public class Testrunner {
             FileOutputStream fos = new FileOutputStream(logfile);
             fos.write(sb.toString().getBytes());
             fos.close();
+
+            // generate chart with JFreeChart
+            String inputname = "";
+            double maxssim = 0;
+            double minssim = 999999;
+            int tickunit = 64;
+            File chartfile = new File(logfile.getAbsolutePath() + ".png");
+            if(chartfile.exists()) {
+                chartfile.delete();
+            }
+            
+            XYSeriesCollection collection = new XYSeriesCollection();
+            Map<String, XYSeries> seriesmap = new HashMap<>();
+            for(LogEntry entry : entries) {
+                String codecname = entry.test.codecname;
+                XYSeries series = seriesmap.get(codecname);
+                if(series == null) {
+                    series = new XYSeries(codecname);
+                    seriesmap.put(codecname, series);
+                    collection.addSeries(series);
+                }
+                series.add(entry.bitrate, entry.ssimScore);
+                
+                if(entry.ssimScore < minssim) {
+                    minssim = entry.ssimScore;
+                }
+                if(entry.ssimScore > maxssim) {
+                    maxssim = entry.ssimScore;
+                }
+                tickunit = entry.test.kbitinc;
+                inputname = entry.test.input.getName();
+            }
+            
+            final JFreeChart chart = ChartFactory.createXYLineChart(
+                    inputname,
+                    "Bitrate (kbps)",
+                    "SSIM",
+                    collection,
+                    PlotOrientation.VERTICAL,
+                    true,
+                    true,
+                    false
+            );
+            // set some chart display options and render to PNG
+            chart.getXYPlot().getRangeAxis().setRange(minssim - 0.5, maxssim + 0.5);
+            NumberAxis xAxis = (NumberAxis) chart.getXYPlot().getDomainAxis();
+            xAxis.setTickUnit(new NumberTickUnit(tickunit));
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
+            renderer.setBaseShapesVisible(true);
+            ChartUtilities.saveChartAsPNG(chartfile, chart, 800, 600);
         }
-        
     }
     
 
@@ -297,7 +355,7 @@ public class Testrunner {
             TestDescription test = new TestDescription(descr);
             test.kbitstart = kbits;
             test.kbitend = kbits;
-            test.kbitinc = 0;
+            test.kbitinc = descr.kbitinc;
             tests.add(test);
             kbits += kbitsinc;
         }
