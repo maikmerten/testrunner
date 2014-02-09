@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test bitratemin="64" bitratemax="512" bitrateincr="64">
+    <input duration="21.6">/home/merten/Videos/sign_irene_cif.y4m</input>
+    <logfile>/tmp/vp9-options.csv</logfile>
+
+    <encoder name="VP9" skip="0">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --target-bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+    
+
+    <encoder name="VP9 (aq1)" skip="0">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --target-bitrate=KBITS --aq-mode=1 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+    
+    <encoder name="VP9 (aq2)" skip="1">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --target-bitrate=KBITS --aq-mode=2 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+    
+    <encoder name="VP9 (aq2, altref)" skip="0">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --auto-alt-ref=1 --target-bitrate=KBITS --aq-mode=2 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+    
+   <encoder name="VP9 (aq2, altref, cpu0)" skip="0">
+        <pass1>vpxenc --good --cpu-used=0 --codec=vp9 --passes=2 --auto-alt-ref=1 --target-bitrate=KBITS --aq-mode=2 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+   
+            
+    <encoder name="VP9 (altref)" skip="1">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --auto-alt-ref=1 --target-bitrate=KBITS --aq-mode=1 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+
+    <encoder name="VP9 (altref, lag16)" skip="1">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --auto-alt-ref=1 --lag-in-frames=16 --target-bitrate=KBITS --aq-mode=1 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+
+    <encoder name="VP9 (altref, lag25)" skip="1">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --auto-alt-ref=1 --lag-in-frames=25 --target-bitrate=KBITS --aq-mode=1 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+       
+</test>

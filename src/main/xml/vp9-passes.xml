@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test bitratemin="64" bitratemax="512" bitrateincr="64">
+    <input duration="21.6">/home/merten/Videos/sign_irene_cif.y4m</input>
+    <logfile>/tmp/vp9-passes.csv</logfile>
+
+    <encoder name="VP9 (1 pass)" skip="0">
+        <pass1>vpxenc --good --codec=vp9 --passes=1 --auto-alt-ref=1 --target-bitrate=KBITS --aq-mode=2 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+    
+        <encoder name="VP9 (2 pass)" skip="0">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --auto-alt-ref=1 --target-bitrate=KBITS --aq-mode=2 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+       
+</test>
