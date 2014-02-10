@@ -1,5 +1,6 @@
 package de.maikmerten.testrunner;
 
+import java.awt.Color;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -16,8 +17,10 @@ import org.jfree.chart.axis.LogarithmicAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.xy.XYDataItem;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
@@ -119,7 +122,7 @@ public class LogWriter {
                     collection.addSeries(series);
                 }
                 series.add(entry.bitrate, entry.ssimScore);
-
+                
                 if (entry.ssimScore < minssim) {
                     minssim = entry.ssimScore;
                 }
@@ -141,19 +144,42 @@ public class LogWriter {
                     false
             );
             // set some chart render options and save to PNG
-            chart.getXYPlot().setRenderer(new XYSplineRenderer());
-            chart.getXYPlot().getRangeAxis().setRange(minssim - 0.25, maxssim + 0.25);
-            NumberAxis xAxis = (NumberAxis) chart.getXYPlot().getDomainAxis();
-            xAxis.setTickUnit(new NumberTickUnit(tickunit));
-            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
+            XYPlot plot = chart.getXYPlot();
+            plot.setBackgroundPaint(Color.BLACK);
+            plot.setRenderer(new XYSplineRenderer());
+            NumberAxis ssimAxis = (NumberAxis) plot.getRangeAxis();
+            ssimAxis.setRange(minssim - 0.25, maxssim + 0.25);
+            NumberAxis bitrateAxis = (NumberAxis) plot.getDomainAxis();
+            bitrateAxis.setTickUnit(new NumberTickUnit(tickunit));
+            XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) plot.getRenderer();
             renderer.setBaseShapesVisible(true);
             ChartUtilities.saveChartAsPNG(new File(logfile.getAbsolutePath() + ".linear.png"), chart, 800, 600);
             
             // log x axis
-            LogarithmicAxis xlogaxis = new LogarithmicAxis("Bitrate (kbps)");
-            xlogaxis.setTickUnit(new NumberTickUnit(tickunit));
-            chart.getXYPlot().setDomainAxis(xlogaxis);
+            LogarithmicAxis bitrateLogAxis = new LogarithmicAxis("Bitrate (kbps)");
+            bitrateLogAxis.setTickUnit(new NumberTickUnit(tickunit));
+            plot.setDomainAxis(bitrateLogAxis);
             ChartUtilities.saveChartAsPNG(new File(logfile.getAbsolutePath() + ".logarithmic.png"), chart, 800, 600);
+            
+            // swap x and y
+            for(XYSeries series : seriesmap.values()) {
+                List<XYDataItem> swappeditems = new ArrayList<>(series.getItemCount());
+                for(int i = 0; i < series.getItemCount(); ++i) {
+                    XYDataItem item = series.getDataItem(i);
+                    swappeditems.add(new XYDataItem(item.getY(), item.getX()));
+                }
+                series.clear();
+                for(XYDataItem item : swappeditems) {
+                    series.add(item);
+                }
+            }
+            plot.setDomainAxis(ssimAxis);
+            bitrateAxis.setMinorTickCount(4);
+            bitrateAxis.setMinorTickMarksVisible(true);
+            plot.setRangeMinorGridlinesVisible(true);
+            plot.setRangeMinorGridlinePaint(Color.DARK_GRAY);
+            plot.setRangeAxis(bitrateAxis);
+            ChartUtilities.saveChartAsPNG(new File(logfile.getAbsolutePath() + ".ratebyssim.png"), chart, 800, 600);
             
         }
     }
