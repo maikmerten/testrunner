@@ -183,6 +183,11 @@ public class Testrunner {
         // cleanup
         encfile.delete();
         decfile.delete();
+        // x264 creates a .mbtree file for the pass file. Clean this up as well.
+        File mbtreefile = new File(passfile.getAbsolutePath() + ".mbtree");
+        if(mbtreefile.exists()) {
+            mbtreefile.delete();
+        }
         passfile.delete();
         
         System.out.println(sb.toString());
