@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test bitratemin="128" bitratemax="768" bitrateincr="64">
+    <input duration="8.6753">/home/merten/Videos/tempete_cif.y4m</input>
+    <logfile>/tmp/tempete.csv</logfile>
+
+    <encoder name="VP9" skip="0">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --auto-alt-ref=1 --target-bitrate=KBITS --aq-mode=2 -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/tempete-vp9.csv</logfile>
+    </encoder>
+
+    <encoder name="VP8" skip="0">
+        <pass1>vpxenc --good --codec=vp8 --passes=2 --auto-alt-ref=1 --lag-in-frames=16 --target-bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/tempete-vp8.csv</logfile>
+    </encoder>
+    
+   
+    <encoder name="VP8 (SSIM)" skip="0">
+        <pass1>vpxenc --good --codec=vp8 --passes=2 --auto-alt-ref=1 --lag-in-frames=16 --target-bitrate=KBITS --tune=ssim -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/tempete-vp8-ssim.csv</logfile>
+    </encoder>
+
+    
+    <encoder name="Theora" skip="1">
+        <pass1>ffmpeg2theora --two-pass -V KBITS -o OUTFILE INFILE</pass1>
+        <decode>ffmpeg -y -i INFILE -f yuv4mpegpipe OUTFILE</decode>
+        <logfile>/tmp/tempete-theora.csv</logfile>
+    </encoder>
+
+    <encoder name="H.264 High" skip="0">
+        <pass1>x264 --profile=high --preset=veryslow --pass=1 --stats=PASSFILE --bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <pass2>x264 --profile=high --preset=veryslow --pass=2 --stats=PASSFILE --bitrate=KBITS -o OUTFILE INFILE</pass2>
+        <decode>ffmpeg -y -i INFILE -f yuv4mpegpipe OUTFILE</decode>
+        <logfile>/tmp/tempete-h264-high.csv</logfile>
+    </encoder>
+    
+    <encoder name="H.264 High (SSIM)" skip="0">
+        <pass1>x264 --profile=high --preset=veryslow --pass=1 --stats=PASSFILE --tune=ssim --bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <pass2>x264 --profile=high --preset=veryslow --pass=2 --stats=PASSFILE --tune=ssim --bitrate=KBITS -o OUTFILE INFILE</pass2>
+        <decode>ffmpeg -y -i INFILE -f yuv4mpegpipe OUTFILE</decode>
+        <logfile>/tmp/tempete-h264-high-ssim.csv</logfile>
+    </encoder>
+    
+    <encoder name="H.264 Baseline" skip="0">
+        <pass1>x264 --profile=baseline --preset=veryslow --pass=1 --stats=PASSFILE --bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <pass2>x264 --profile=baseline --preset=veryslow --pass=2 --stats=PASSFILE --bitrate=KBITS -o OUTFILE INFILE</pass2>
+        <decode>ffmpeg -y -i INFILE -f yuv4mpegpipe OUTFILE</decode>
+        <logfile>/tmp/tempete-h264-baseline.csv</logfile>
+    </encoder>
+        
+    <encoder name="H.264 Baseline (SSIM)" skip="0">
+        <pass1>x264 --profile=baseline --preset=veryslow --pass=1 --stats=PASSFILE --tune=ssim --bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <pass2>x264 --profile=baseline --preset=veryslow --pass=2 --stats=PASSFILE --tune=ssim --bitrate=KBITS -o OUTFILE INFILE</pass2>
+        <decode>ffmpeg -y -i INFILE -f yuv4mpegpipe OUTFILE</decode>
+        <logfile>/tmp/tempete-h264-baseline-ssim.csv</logfile>
+    </encoder>
+       
+</test>
