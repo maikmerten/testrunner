@@ -119,7 +119,6 @@ public class LogWriter {
                 if (series == null) {
                     series = new XYSeries(codecname);
                     seriesmap.put(codecname, series);
-                    collection.addSeries(series);
                 }
                 series.add(entry.bitrate, entry.ssimScore);
                 
@@ -131,6 +130,13 @@ public class LogWriter {
                 }
                 tickunit = entry.test.kbitinc;
                 inputname = entry.test.input.getName();
+            }
+            
+            // add series to collection in alphabetical order
+            List<String> codecnames = new ArrayList<>(seriesmap.keySet());
+            Collections.sort(codecnames);
+            for(String codecname : codecnames) {
+                collection.addSeries(seriesmap.get(codecname));
             }
 
             final JFreeChart chart = ChartFactory.createXYLineChart(
