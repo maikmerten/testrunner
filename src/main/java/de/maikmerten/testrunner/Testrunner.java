@@ -80,7 +80,7 @@ public class Testrunner {
 
         // read stderr and stdout
         while (wt.running) {
-            Thread.sleep(10);
+            Thread.sleep(100);
             if (error.ready()) {
                 String line = error.readLine();
                 //System.out.println(line);
@@ -92,7 +92,7 @@ public class Testrunner {
         }
 
         // just make sure we really did not miss any output on stdout
-        if (out.ready()) {
+        while (out.ready()) {
             lastline = out.readLine();
         }
 
