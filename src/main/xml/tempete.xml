@@ -3,6 +3,12 @@
     <input duration="8.6753">/home/merten/Videos/tempete_cif.y4m</input>
     <logfile>/tmp/tempete.csv</logfile>
 
+    <encoder name="H.265 (SSIM)" skip="0">
+        <pass1>x265 --tune=ssim --preset=veryslow --bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <decode>ffmpeg -y -i INFILE -f yuv4mpegpipe OUTFILE</decode>
+        <logfile>/tmp/tempete-h265.csv</logfile>
+    </encoder>
+
     <encoder name="VP9" skip="0">
         <pass1>vpxenc --good --codec=vp9 --passes=2 --auto-alt-ref=1 --target-bitrate=KBITS --aq-mode=2 -o OUTFILE INFILE</pass1>
         <decode>vpxdec -o OUTFILE INFILE</decode>
