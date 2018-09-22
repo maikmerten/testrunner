@@ -27,10 +27,20 @@ public class ConfigReader {
         
                
         Node test = doc.getElementsByTagName("test").item(0);
-        int bitratemin = Integer.parseInt(test.getAttributes().getNamedItem("bitratemin").getTextContent());
-        int bitratemax = Integer.parseInt(test.getAttributes().getNamedItem("bitratemax").getTextContent());
-        int bitrateincr = Integer.parseInt(test.getAttributes().getNamedItem("bitrateincr").getTextContent());
-        
+		
+		int bitratemin = 0;
+        int bitratemax = 0;
+        int bitrateincr = 0;
+
+		try {
+			bitratemin = Integer.parseInt(test.getAttributes().getNamedItem("bitratemin").getTextContent());
+			bitratemax = Integer.parseInt(test.getAttributes().getNamedItem("bitratemax").getTextContent());
+			bitrateincr = Integer.parseInt(test.getAttributes().getNamedItem("bitrateincr").getTextContent());
+		} catch (Exception ex) {
+			System.out.println("Test not set up for bitrate testing, hopefully there's quantizer config...");
+		}
+		
+       
         File globallogfile = null;
         for(int i = 0; i < test.getChildNodes().getLength(); ++i) {
             Node child = test.getChildNodes().item(i);
@@ -63,7 +73,26 @@ public class ConfigReader {
             if(name != null) {
                 codecname = name.getTextContent().trim();
             }
-            
+			
+			double quantmin = 0;
+			double quantmax = 0;
+			double quantincr = 0;
+			try {
+				quantmin = Double.parseDouble(encoder.getAttributes().getNamedItem("quantmin").getTextContent());
+				quantmax = Double.parseDouble(encoder.getAttributes().getNamedItem("quantmax").getTextContent());
+				quantincr = Double.parseDouble(encoder.getAttributes().getNamedItem("quantincr").getTextContent());
+			} catch(Exception ex) {
+				// setup most likely does not contain quantizer information
+			}
+			
+			String suffix = ".bin";
+			try {
+				suffix = encoder.getAttributes().getNamedItem("suffix").getTextContent();
+			} catch(Exception ex) {
+				// no file-suffix given for encoded files
+			}
+
+			
             String pass1 = null;
             String pass2 = null;
             String decode = null;
@@ -93,6 +122,9 @@ public class ConfigReader {
             System.out.println(pass2);
             System.out.println(decode);
             System.out.println(logfile);
+			System.out.println("quantmin: " + quantmin);
+			System.out.println("quantmax: " + quantmax);
+			System.out.println("quantincr: " + quantincr);
             System.out.println();
             
             TestDescription descr = new TestDescription();
@@ -102,8 +134,12 @@ public class ConfigReader {
             descr.kbitstart = bitratemin;
             descr.kbitend = bitratemax;
             descr.kbitinc = bitrateincr;
+			descr.quantstart = quantmin;
+			descr.quantend = quantmax;
+			descr.quantinc = quantincr;
             descr.pass1 = pass1;
             descr.pass2 = pass2;
+			descr.suffix = suffix;
             descr.decode = decode;
             descr.logfile = logfile;
             descr.globallogfile = globallogfile;
@@ -115,7 +151,7 @@ public class ConfigReader {
     
     public static void main(String[] args) throws Exception {
         
-        File xmlfile = new File("irene.xml");
+        File xmlfile = new File("av1-irene.xml");
         ConfigReader.readDescriptions(xmlfile);
     }
     

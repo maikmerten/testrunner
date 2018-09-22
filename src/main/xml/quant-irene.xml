@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<test>
+    <input duration="21.6">/tmp/sign_irene_cif.y4m</input>
+    <logfile>/tmp/quant-irene.csv</logfile>
+
+    <encoder name="VP9" skip="1">
+        <pass1>vpxenc --good --codec=vp9 --passes=2 --target-bitrate=KBITS -o OUTFILE INFILE</pass1>
+        <decode>vpxdec -o OUTFILE INFILE</decode>
+        <logfile>/tmp/irene-vp9.csv</logfile>
+    </encoder>
+    
+    <encoder name="MPEG" skip="1" quantmin="0" quantmax="31" quantincr="3" suffix=".mpg">
+        <pass1>ffmpeg -y -i INFILE -q:v QUANTIZER OUTFILE</pass1>
+        <decode>ffmpeg -y -i INFILE OUTFILE</decode>
+        <logfile>/tmp/irene-mpeg.csv</logfile>
+    </encoder>
+    
+    <encoder name="Xvid" skip="0" quantmin="0" quantmax="31" quantincr="3" suffix=".avi">
+        <pass1>ffmpeg -y -i INFILE -c:v libxvid -q:v QUANTIZER OUTFILE</pass1>
+        <decode>ffmpeg -y -i INFILE OUTFILE</decode>
+        <logfile>/tmp/irene-mpeg.csv</logfile>
+    </encoder>
+    
+    <encoder name="H.264" skip="0" quantmin="5" quantmax="35" quantincr="3" suffix=".mp4">
+        <pass1>ffmpeg -y -i INFILE -crf QUANTIZER OUTFILE</pass1>
+        <decode>ffmpeg -y -i INFILE OUTFILE</decode>
+        <logfile>/tmp/irene-mpeg.csv</logfile>
+    </encoder>
+    
+    <encoder name="VP8" skip="0" quantmin="4" quantmax="50" quantincr="5" suffix=".webm">
+        <pass1>ffmpeg -y -i INFILE -c:v libvpx -crf QUANTIZER -b:v 0 OUTFILE</pass1>
+        <decode>ffmpeg -y -i INFILE OUTFILE</decode>
+        <logfile>/tmp/irene-mpeg.csv</logfile>
+    </encoder>
+
+       
+</test>

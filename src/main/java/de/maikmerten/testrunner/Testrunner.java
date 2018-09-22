@@ -69,6 +69,7 @@ public class Testrunner {
     private final Map<String, List<LogEntry>> logs = new HashMap<>();
 
     private String execCmd(String cmd) throws Exception {
+		System.out.println("Running cmd: " + cmd);
         Process p = Runtime.getRuntime().exec(cmd);
         BufferedReader error = new BufferedReader(new InputStreamReader(p.getErrorStream()));
         BufferedReader out = new BufferedReader(new InputStreamReader(p.getInputStream()));
@@ -116,6 +117,7 @@ public class Testrunner {
     private void runTest(TestDescription test) throws Exception {
         int kbits = test.kbitstart;
         int bits = kbits * 1000;
+		double quantizer = test.quantstart;
         StringBuilder sb = new StringBuilder();
 
         File infile = test.input;
@@ -123,10 +125,14 @@ public class Testrunner {
             throw new RuntimeException("Cannot find " + infile.getAbsolutePath());
         }
 
-        System.out.println("Starting test of " + test.codecname  +" with " + kbits + " kbit/s");
+		if(test.quantinc <= 0) {
+			System.out.println("Starting test of " + test.codecname  +" with " + kbits + " kbit/s");
+		} else {
+			System.out.println("Starting test of " + test.codecname  +" with quantizer " + quantizer);
+		}
         sb.append("\nResults for ").append(test.codecname).append(" at ").append(kbits).append(" kbps:\n");
 
-        File encfile = File.createTempFile("encoding", ".bin");
+        File encfile = File.createTempFile("encoding", test.suffix);
         File decfile = File.createTempFile("decoded", ".y4m");
         File passfile = File.createTempFile("pass", ".log");
 
@@ -139,6 +145,7 @@ public class Testrunner {
         cmd = cmd.replaceAll("PASSFILE", passfile.getAbsolutePath());
         cmd = cmd.replaceAll("KBITS", "" + kbits);
         cmd = cmd.replaceAll("BITS", "" + bits);
+		cmd = cmd.replaceAll("QUANTIZER", "" + quantizer);
         execCmd(cmd);
 
         if (test.pass2 != null) {
@@ -219,15 +226,30 @@ public class Testrunner {
 
         int kbits = descr.kbitstart;
         int kbitsinc = descr.kbitinc;
+		
+		double quant = descr.quantstart;
+		double quantend = descr.quantend;
+		double quantinc = descr.quantinc;
 
-        while (kbits <= descr.kbitend) {
-            TestDescription test = new TestDescription(descr);
-            test.kbitstart = kbits;
-            test.kbitend = kbits;
-            test.kbitinc = descr.kbitinc;
-            tests.add(test);
-            kbits += kbitsinc;
-        }
+		if(quantinc <= 0) {
+			while (kbits <= descr.kbitend) {
+				TestDescription test = new TestDescription(descr);
+				test.kbitstart = kbits;
+				test.kbitend = kbits;
+				test.kbitinc = descr.kbitinc;
+				tests.add(test);
+				kbits += kbitsinc;
+			}
+		} else {
+			while (quant <= quantend) {
+				TestDescription test = new TestDescription(descr);
+				test.quantstart = quant;
+				test.quantend = quantend;
+				test.quantinc = quantinc;
+				tests.add(test);
+				quant += quantinc;
+			}
+		}
     }
 
     public static void main(String[] args) throws Exception {
@@ -238,7 +260,7 @@ public class Testrunner {
        
         File xmlconfig;
         if(args.length == 0) {
-            xmlconfig = new File("./src/main/xml/irene.xml");
+            xmlconfig = new File("./src/main/xml/quant-irene.xml");
         } else {
             xmlconfig = new File(args[0]);
         }

@@ -14,6 +14,10 @@ public class TestDescription {
     int kbitend = 1024;
     int kbitinc = 128;
     double inputduration;
+	double quantstart = 0;
+	double quantend = 0;
+	double quantinc = 0;
+	String suffix = ".bin";
   
     
     public TestDescription() {
@@ -28,9 +32,13 @@ public class TestDescription {
         this.kbitstart = descr.kbitstart;
         this.kbitend = descr.kbitend;
         this.kbitinc = descr.kbitinc;
+		this.quantstart = descr.quantstart;
+		this.quantend = descr.quantend;
+		this.quantinc = descr.quantinc;
         this.decode = descr.decode;
         this.pass1 = descr.pass1;
         this.pass2 = descr.pass2;
+		this.suffix = descr.suffix;
         this.logfile = descr.logfile;
         this.globallogfile = descr.globallogfile;
     }
