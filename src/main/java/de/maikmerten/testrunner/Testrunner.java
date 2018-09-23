@@ -117,8 +117,12 @@ public class Testrunner {
     private void runTest(TestDescription test) throws Exception {
         int kbits = test.kbitstart;
         int bits = kbits * 1000;
-		double quantizer = test.quantstart;
         StringBuilder sb = new StringBuilder();
+		
+		String quantizer = "" + test.quantstart;
+		if(quantizer.endsWith(".0")) {
+			quantizer = quantizer.substring(0, quantizer.lastIndexOf("."));
+		}
 
         File infile = test.input;
         if (!infile.exists()) {
